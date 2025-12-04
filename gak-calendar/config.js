@@ -8,9 +8,9 @@
 window.CONFIG = {
   // Google Apps Script Web App URL
   // Get this from: Apps Script > Deploy > Manage deployments > Web App URL
-  API_URL: '',  // Leave empty to use localStorage for development
+  API_URL: 'https://script.google.com/macros/s/AKfycbxkdc64GprVdWo6ZwjLWS0NVB1FN1cFluRHSMCec6Vcaj5g0BQrgL1ZC83VqYIbldhstA/exec',
 
-  // Example: API_URL: 'https://script.google.com/macros/s/AKfycbzXXXXXXX/exec'
+  // ✅ CONNECTED TO YOUR GOOGLE SHEETS!
 
   // App settings
   APP_NAME: 'Gabriel\'s Art Kids Calendar',
