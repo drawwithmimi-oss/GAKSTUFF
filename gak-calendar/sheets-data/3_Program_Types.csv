@@ -1,0 +1,6 @@
+type_id,type_name,color_code,active
+ece,ECE Programs,#28a745,TRUE
+asap,ASAP,#17a2b8,TRUE
+music,Music Programs,#ffc107,TRUE
+adult,Adult/Teen Classes,#dc3545,TRUE
+offsite,Off-site,#6c757d,TRUE

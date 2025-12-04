@@ -1,0 +1,3 @@
+location_id,location_name,rooms,active
+holly,Holly Street,"[""Upstairs Classroom"",""Downstairs Space""]",TRUE
+dupont,D Street/DuPont,"[""Orange Room"",""Green Room"",""Great Room"",""Stage Area"",""Cubby Room""]",TRUE

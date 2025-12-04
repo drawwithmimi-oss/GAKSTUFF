@@ -1,0 +1,12 @@
+email,name,role,can_create,can_edit_all,can_delete,active
+mimi@gabrielsartkids.com,Mimi,admin,TRUE,TRUE,TRUE,TRUE
+amanda@gabrielsartkids.com,Amanda,manager,TRUE,TRUE,FALSE,TRUE
+meredith@gabrielsartkids.com,Meredith,manager,TRUE,TRUE,FALSE,TRUE
+trin@gabrielsartkids.com,Trin,manager,TRUE,TRUE,FALSE,TRUE
+lisa@gabrielsartkids.com,Lisa,teacher,TRUE,FALSE,TRUE,TRUE
+julie@gabrielsartkids.com,Julie,teacher,TRUE,FALSE,TRUE,TRUE
+riley@gabrielsartkids.com,Riley,teacher,TRUE,FALSE,TRUE,TRUE
+gina@gabrielsartkids.com,Gina,teacher,TRUE,FALSE,TRUE,TRUE
+claire@gabrielsartkids.com,Claire,teacher,TRUE,FALSE,TRUE,TRUE
+lael@gabrielsartkids.com,Lael,teacher,TRUE,FALSE,TRUE,TRUE
+nia@gabrielsartkids.com,Nia,teacher,TRUE,FALSE,TRUE,TRUE

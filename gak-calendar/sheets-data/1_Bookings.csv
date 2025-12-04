@@ -1,0 +1,12 @@
+id,programName,teacher,programType,location,room,scheduleType,days,date,startTime,endTime,startDate,endDate,notes,createdBy,createdAt,modifiedBy,modifiedAt,status
+1,Pre-K Program,Lisa,ece,holly,Upstairs Classroom,weekly,"[""mon"",""tue"",""wed"",""thu"",""fri""]",,08:30,15:00,2024-09-01,2025-06-15,,demo@gabrielsartkids.com,2024-12-04T10:00:00Z,,,active
+2,Toddler Music,Riley,music,holly,Upstairs Classroom,weekly,"[""mon"",""wed"",""fri""]",,09:30,10:30,2024-09-01,2025-06-15,,demo@gabrielsartkids.com,2024-12-04T10:05:00Z,,,active
+3,Adult Art Class,Gina,adult,holly,Upstairs Classroom,weekly,"[""tue"",""thu""]",,10:30,12:00,2024-12-03,2025-03-15,,demo@gabrielsartkids.com,2024-12-04T10:10:00Z,,,active
+4,ASAP Prep,Lael,asap,holly,,weekly,"[""tue""]",,13:00,14:00,2024-09-01,2025-06-15,,demo@gabrielsartkids.com,2024-12-04T10:15:00Z,,,active
+5,Teen Art Class,TBD,adult,holly,,weekly,"[""tue""]",,18:00,19:30,2024-12-03,2025-03-15,,demo@gabrielsartkids.com,2024-12-04T10:20:00Z,,,active
+6,Music Class,Julie,music,holly,,weekly,"[""fri""]",,09:30,10:30,2024-09-01,2025-06-15,,demo@gabrielsartkids.com,2024-12-04T10:25:00Z,,,active
+7,Try GAK Friday,Claire,asap,holly,,weekly,"[""fri""]",,13:00,15:00,2024-09-01,2025-06-15,,demo@gabrielsartkids.com,2024-12-04T10:30:00Z,,,active
+8,ASAP Program,Claire & Lael,asap,dupont,Orange Room,weekly,"[""mon"",""tue"",""wed"",""thu"",""fri""]",,08:30,15:00,2024-09-01,2025-06-15,,demo@gabrielsartkids.com,2024-12-04T10:35:00Z,,,active
+9,ASAP After School,Extended Day,asap,dupont,,weekly,"[""mon"",""tue"",""wed"",""thu"",""fri""]",,16:00,17:30,2024-09-01,2025-06-15,,demo@gabrielsartkids.com,2024-12-04T10:40:00Z,,,active
+10,Ceramics - Middle School,Nia,adult,dupont,Cubby Room,weekly,"[""tue""]",,17:00,18:00,2024-12-03,2025-03-15,,demo@gabrielsartkids.com,2024-12-04T10:45:00Z,,,active
+11,Ceramics Class,TBD,adult,dupont,Cubby Room,weekly,"[""thu""]",,17:00,18:00,2024-12-03,2025-03-15,,demo@gabrielsartkids.com,2024-12-04T10:50:00Z,,,active
