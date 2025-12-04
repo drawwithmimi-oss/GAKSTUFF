@@ -264,15 +264,29 @@ document.addEventListener('DOMContentLoaded', async function() {
   console.log('Initializing GAK Calendar...');
 
   try {
-    // Initialize API
+    // Show loading
+    window.showLoading?.('Initializing calendar...');
+
+    // Initialize API first and wait for it
     await initializeAPI();
+
+    // Verify API is ready
+    if (!window.API || typeof window.API.getBookingsForWeek !== 'function') {
+      throw new Error('API not properly initialized');
+    }
+
+    console.log('API initialized:', window.API.constructor.name);
 
     // Initialize Calendar
     await window.CalendarInstance.initialize();
 
+    // Hide loading
+    window.hideLoading?.();
+
     console.log('GAK Calendar initialized successfully');
   } catch (error) {
     console.error('Failed to initialize calendar:', error);
-    window.showError?.('Failed to initialize calendar: ' + error.message);
+    window.hideLoading?.();
+    alert('Failed to initialize calendar: ' + error.message + '\n\nPlease refresh the page.');
   }
 });

@@ -232,6 +232,14 @@ class LocalStorageAPI {
     return bookings;
   }
 
+  async getBookingsForWeek(weekStart, location = null) {
+    const filters = { week: weekStart };
+    if (location) {
+      filters.location = location;
+    }
+    return this.getBookings(filters);
+  }
+
   async createBooking(booking) {
     const bookings = await this.getBookings();
     booking.id = this.idCounter++;
@@ -323,23 +331,43 @@ window.API = null;
 
 // Initialize API (will be called when page loads)
 async function initializeAPI() {
-  // Try to use Google Sheets API if configured
-  if (window.CONFIG?.API_URL) {
-    window.API = new CalendarAPI();
+  try {
+    // Try to use Google Sheets API if configured
+    if (window.CONFIG?.API_URL && window.CONFIG.API_URL.trim() !== '') {
+      console.log('Attempting to connect to Google Sheets API...');
+      window.API = new CalendarAPI();
 
-    // Test connection
-    const healthy = await window.API.checkHealth();
+      // Test connection with timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('API connection timeout')), 10000)
+      );
 
-    if (!healthy) {
-      console.warn('Google Sheets API not available, falling back to localStorage');
-      window.API = new LocalStorageAPI();
+      const healthPromise = window.API.checkHealth();
+
+      try {
+        const healthy = await Promise.race([healthPromise, timeoutPromise]);
+
+        if (!healthy) {
+          throw new Error('Health check failed');
+        }
+
+        console.log('✅ Connected to Google Sheets API');
+        return window.API;
+      } catch (error) {
+        console.warn('⚠️ Google Sheets API not available:', error.message);
+        console.log('Falling back to localStorage');
+        window.API = new LocalStorageAPI();
+        return window.API;
+      }
     } else {
-      console.log('Connected to Google Sheets API');
+      console.log('📦 Using localStorage (development mode)');
+      window.API = new LocalStorageAPI();
+      return window.API;
     }
-  } else {
-    console.log('Using localStorage (development mode)');
+  } catch (error) {
+    console.error('❌ Error initializing API:', error);
+    console.log('Falling back to localStorage');
     window.API = new LocalStorageAPI();
+    return window.API;
   }
-
-  return window.API;
 }
