@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabriel's Art Kids - Calendar Booking System</title>
+
+    <!-- Configuration -->
+    <script src="config.js"></script>
+
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Week Navigation */
+        .week-navigation {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .week-nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .week-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .btn-nav {
+            background: #495057;
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .btn-nav:hover {
+            background: #343a40;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        /* Content */
+        .content {
+            padding: 30px;
+        }
+
+        .location-view {
+            display: none;
+        }
+
+        .location-view.active {
+            display: block;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .color-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        /* Calendar */
+        .calendar-container {
+            overflow-x: auto;
+        }
+
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar th {
+            background: #495057;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .calendar td {
+            border: 1px solid #dee2e6;
+            min-height: 120px;
+            vertical-align: top;
+            position: relative;
+            padding: 8px;
+            background: #fafafa;
+        }
+
+        .day-header {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-booking-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .calendar td:hover .add-booking-btn {
+            opacity: 1;
+        }
+
+        .add-booking-btn:hover {
+            background: #5568d3;
+        }
+
+        .bookings-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .day-cell {
+            cursor: pointer;
+        }
+
+        .empty-day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            color: #adb5bd;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        /* Booking Blocks */
+        .booking-block {
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .booking-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .booking-time {
+            font-weight: 700;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+            color: #495057;
+        }
+
+        .booking-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 3px;
+            line-height: 1.3;
+        }
+
+        .booking-teacher {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        /* Program Type Colors */
+        .ece { background: #d4edda; border-left-color: #28a745; }
+        .asap { background: #d1ecf1; border-left-color: #17a2b8; }
+        .music { background: #fff3cd; border-left-color: #ffc107; }
+        .adult { background: #f8d7da; border-left-color: #dc3545; }
+        .offsite { background: #e2e3e5; border-left-color: #6c757d; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #6c757d;
+            line-height: 1;
+            padding: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Alerts */
+        .conflict-warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .conflict-warning.active {
+            display: block;
+        }
+
+        .conflict-warning h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .conflict-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .conflict-list li {
+            padding: 8px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            color: #155724;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #dee2e6;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            flex: 1;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Global Loader */
+        .global-loader {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px 15px;
+                flex-direction: column;
+            }
+
+            .header-left h1 {
+                font-size: 1.3em;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .week-navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .week-title {
+                text-align: center;
+            }
+
+            .week-nav-buttons {
+                justify-content: center;
+            }
+
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.9em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .add-booking-btn {
+                opacity: 1;
+            }
+
+            .calendar {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>🗓️ Calendar Booking System</h1>
+                <p>Manage classes and reserve locations</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="openBookingForm('new')">
+                    + New Booking
+                </button>
+                <button class="btn btn-secondary" onclick="clearAllData()">
+                    🗑️ Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Week Navigation -->
+        <div class="week-navigation">
+            <div class="week-nav-buttons">
+                <button class="btn btn-nav" id="prevWeek">← Previous</button>
+                <button class="btn btn-nav" id="todayBtn">Today</button>
+                <button class="btn btn-nav" id="nextWeek">Next →</button>
+            </div>
+            <div class="week-title" id="weekTitle">Week of ...</div>
+        </div>
+
+        <!-- Location Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchLocation('holly')">📍 Holly Street</button>
+            <button class="tab" onclick="switchLocation('dupont')">📍 D Street/DuPont</button>
+            <button class="tab" onclick="switchLocation('all')">📊 All Locations</button>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="color-box ece"></div>
+                    <span>ECE Programs</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box asap"></div>
+                    <span>ASAP</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box music"></div>
+                    <span>Music Programs</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box adult"></div>
+                    <span>Adult/Teen Classes</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box offsite"></div>
+                    <span>Off-site</span>
+                </div>
+            </div>
+
+            <!-- Holly Street Calendar -->
+            <div id="holly" class="location-view active">
+                <h2 style="margin-bottom: 20px; color: #495057;">Holly Street</h2>
+                <div class="calendar-container">
+                    <table class="calendar">
+                        <thead>
+                            <tr>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="day-cell" onclick="handleDayClick('holly', 'mon', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('holly', 'mon', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('holly', 'tue', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('holly', 'tue', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('holly', 'wed', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('holly', 'wed', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('holly', 'thu', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('holly', 'thu', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('holly', 'fri', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('holly', 'fri', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DuPont Calendar -->
+            <div id="dupont" class="location-view">
+                <h2 style="margin-bottom: 20px; color: #495057;">D Street/DuPont</h2>
+                <div class="calendar-container">
+                    <table class="calendar">
+                        <thead>
+                            <tr>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="day-cell" onclick="handleDayClick('dupont', 'mon', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('dupont', 'mon', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('dupont', 'tue', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('dupont', 'tue', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('dupont', 'wed', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('dupont', 'wed', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('dupont', 'thu', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('dupont', 'thu', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                                <td class="day-cell" onclick="handleDayClick('dupont', 'fri', '')">
+                                    <div class="day-header">
+                                        <button class="add-booking-btn" onclick="event.stopPropagation(); handleDayClick('dupont', 'fri', '')">+ Add</button>
+                                    </div>
+                                    <div class="bookings-stack"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- All Locations View -->
+            <div id="all" class="location-view">
+                <h2 style="margin-bottom: 20px; color: #495057;">All Locations Overview</h2>
+                <p style="color: #6c757d; margin-bottom: 20px;">Switch to a specific location tab to book time slots</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">📍 Holly Street</h3>
+                        <p style="margin: 5px 0;"><strong id="hollyCount">0 bookings</strong> this week</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">📍 D Street/DuPont</h3>
+                        <p style="margin: 5px 0;"><strong id="dupontCount">0 bookings</strong> this week</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">New Booking</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                ✓ Booking saved successfully!
+            </div>
+
+            <form id="bookingForm" onsubmit="return saveBooking(event)">
+                <div class="form-group">
+                    <label>Program/Class Name *</label>
+                    <input type="text" id="programName" required placeholder="e.g., Pre-K Program, Adult Art Class">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teacher/Instructor *</label>
+                        <input type="text" id="teacher" required placeholder="e.g., Lisa, Gina">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Program Type *</label>
+                        <select id="programType" required>
+                            <option value="">Select type...</option>
+                            <option value="ece">ECE Programs</option>
+                            <option value="asap">ASAP</option>
+                            <option value="music">Music Programs</option>
+                            <option value="adult">Adult/Teen Classes</option>
+                            <option value="offsite">Off-site</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Location *</label>
+                        <select id="location" required onchange="updateRooms()">
+                            <option value="">Select location...</option>
+                            <option value="holly">Holly Street</option>
+                            <option value="dupont">D Street/DuPont</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Room</label>
+                        <select id="room">
+                            <option value="">Select room...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Schedule Type *</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="recurringWeekly" name="scheduleType" value="weekly" checked onchange="toggleScheduleOptions()">
+                            <label for="recurringWeekly">Recurring Weekly</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="specificDates" name="scheduleType" value="specific" onchange="toggleScheduleOptions()">
+                            <label for="specificDates">Specific Dates</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="oneTime" name="scheduleType" value="onetime" onchange="toggleScheduleOptions()">
+                            <label for="oneTime">One-time</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="weeklyOptions">
+                    <div class="form-group">
+                        <label>Days of Week *</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="mon" value="mon">
+                                <label for="mon">Monday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tue" value="tue">
+                                <label for="tue">Tuesday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="wed" value="wed">
+                                <label for="wed">Wednesday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="thu" value="thu">
+                                <label for="thu">Thursday</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="fri" value="fri">
+                                <label for="fri">Friday</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dateOptions" style="display: none;">
+                    <div class="form-group">
+                        <label>Select Date *</label>
+                        <input type="date" id="specificDate">
+                        <p style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">For one-time or specific date bookings</p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Time * 🕐</label>
+                        <input type="time" id="startTime" required>
+                        <p style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">When class begins</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>End Time * 🕐</label>
+                        <input type="time" id="endTime" required>
+                        <p style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">When class ends</p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Day of Class * 📅</label>
+                        <input type="date" id="startDate" required>
+                        <p style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">When this class series begins (e.g., Sept 1)</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Last Day of Class (Optional) 📅</label>
+                        <input type="date" id="endDate">
+                        <p style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">Leave empty if ongoing (e.g., June 15 for school year)</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="notes" rows="3" placeholder="Special requirements, equipment needs, etc."></textarea>
+                </div>
+
+                <div class="conflict-warning" id="conflictWarning">
+                    <h4>⚠️ Scheduling Conflicts Detected</h4>
+                    <ul class="conflict-list" id="conflictList"></ul>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="btn btn-delete" id="deleteBtn" style="display: none;" onclick="deleteBooking()">Delete</button>
+                    <button type="button" class="btn btn-primary" onclick="checkConflicts()">Check Availability</button>
+                    <button type="submit" class="btn btn-save" id="saveBtn" disabled>Save Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Global Loader -->
+    <div id="globalLoader" class="global-loader">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/booking-form.js"></script>
+</body>
+</html>
