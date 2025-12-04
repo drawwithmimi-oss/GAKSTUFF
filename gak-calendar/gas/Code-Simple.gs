@@ -98,25 +98,36 @@ function getBookings(params) {
     // Skip empty rows
     if (!row[0]) continue;
 
+    // Parse days if it's JSON
+    let days = [];
+    try {
+      if (row[7] && row[7].startsWith('[')) {
+        days = JSON.parse(row[7]);
+      }
+    } catch (e) {
+      Logger.log('Error parsing days: ' + e);
+    }
+
     const booking = {
       id: row[0],
-      location: row[1],
-      room: row[2],
+      programName: row[1],
+      teacher: row[2],
       programType: row[3],
-      teacherName: row[4],
-      className: row[5],
-      dayOfWeek: row[6],
-      startTime: row[7],
-      endTime: row[8],
-      startDate: row[9] ? formatDate(row[9]) : null,
-      endDate: row[10] ? formatDate(row[10]) : null,
-      isRecurring: row[11],
-      specificDate: row[12] ? formatDate(row[12]) : null,
+      location: row[4],
+      room: row[5],
+      scheduleType: row[6],
+      days: days,
+      date: row[8] ? formatDate(row[8]) : null,
+      startTime: row[9],
+      endTime: row[10],
+      startDate: row[11] ? formatDate(row[11]) : null,
+      endDate: row[12] ? formatDate(row[12]) : null,
       notes: row[13],
-      status: row[14],
-      createdBy: row[15],
-      createdAt: row[16],
-      modifiedAt: row[17]
+      createdBy: row[14],
+      createdAt: row[15],
+      modifiedBy: row[16],
+      modifiedAt: row[17],
+      status: row[18]
     };
 
     // Apply filters
@@ -139,27 +150,36 @@ function createBooking(booking) {
   const lastRow = sheet.getLastRow();
   const nextId = lastRow > 1 ? sheet.getRange(lastRow, 1).getValue() + 1 : 1;
 
-  // Prepare row data
+  // Convert frontend field names to backend format
+  const programName = booking.programName || booking.className || '';
+  const teacher = booking.teacher || booking.teacherName || '';
+  const days = booking.days || [];
+  const scheduleType = booking.scheduleType || 'weekly';
+  const isRecurring = scheduleType === 'weekly';
+  const specificDate = booking.date || booking.specificDate || '';
+
+  // Prepare row data matching your Google Sheet columns
   const now = new Date();
   const rowData = [
     nextId,
+    programName,
+    teacher,
+    booking.programType || '',
     booking.location || '',
     booking.room || '',
-    booking.programType || '',
-    booking.teacherName || '',
-    booking.className || '',
-    booking.dayOfWeek || '',
+    scheduleType,
+    JSON.stringify(days),  // Store days as JSON array
+    specificDate,
     booking.startTime || '',
     booking.endTime || '',
     booking.startDate || '',
     booking.endDate || '',
-    booking.isRecurring || false,
-    booking.specificDate || '',
     booking.notes || '',
-    'active',
     'team@gabrielsartkids.com',
     now,
-    now
+    '',  // modifiedBy
+    '',  // modifiedAt
+    'active'
   ];
 
   // Append row
@@ -193,27 +213,35 @@ function updateBooking(booking) {
     return jsonResponse({ success: false, error: 'Booking not found' }, 404);
   }
 
+  // Convert frontend field names to backend format
+  const programName = booking.programName || booking.className || '';
+  const teacher = booking.teacher || booking.teacherName || '';
+  const days = booking.days || [];
+  const scheduleType = booking.scheduleType || 'weekly';
+  const specificDate = booking.date || booking.specificDate || '';
+
   // Update row
   const now = new Date();
   const rowData = [
     booking.id,
+    programName,
+    teacher,
+    booking.programType || '',
     booking.location || '',
     booking.room || '',
-    booking.programType || '',
-    booking.teacherName || '',
-    booking.className || '',
-    booking.dayOfWeek || '',
+    scheduleType,
+    JSON.stringify(days),
+    specificDate,
     booking.startTime || '',
     booking.endTime || '',
     booking.startDate || '',
     booking.endDate || '',
-    booking.isRecurring || false,
-    booking.specificDate || '',
     booking.notes || '',
-    booking.status || 'active',
-    data[rowIndex - 1][15], // Keep original createdBy
-    data[rowIndex - 1][16], // Keep original createdAt
-    now // Update modifiedAt
+    data[rowIndex - 1][14], // Keep original createdBy
+    data[rowIndex - 1][15], // Keep original createdAt
+    'team@gabrielsartkids.com', // modifiedBy
+    now, // modifiedAt
+    booking.status || 'active'
   ];
 
   sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
@@ -244,8 +272,8 @@ function deleteBooking(bookingId) {
   }
 
   // Soft delete - set status to 'deleted'
-  sheet.getRange(rowIndex, 15).setValue('deleted');
-  sheet.getRange(rowIndex, 18).setValue(new Date()); // Update modifiedAt
+  sheet.getRange(rowIndex, 19).setValue('deleted'); // Column 19 is status
+  sheet.getRange(rowIndex, 18).setValue(new Date()); // Column 18 is modifiedAt
 
   return jsonResponse({ success: true });
 }
@@ -263,20 +291,30 @@ function checkConflicts(newBooking) {
     const row = data[i];
 
     // Skip empty rows, deleted bookings, and self
-    if (!row[0] || row[14] === 'deleted' || row[0] === newBooking.id) continue;
+    if (!row[0] || row[18] === 'deleted' || row[0] === newBooking.id) continue;
+
+    // Parse days if it's JSON
+    let days = [];
+    try {
+      if (row[7] && row[7].startsWith('[')) {
+        days = JSON.parse(row[7]);
+      }
+    } catch (e) {
+      Logger.log('Error parsing days: ' + e);
+    }
 
     const existing = {
       id: row[0],
-      location: row[1],
-      room: row[2],
-      dayOfWeek: row[6],
-      startTime: row[7],
-      endTime: row[8],
-      startDate: row[9],
-      endDate: row[10],
-      isRecurring: row[11],
-      specificDate: row[12],
-      className: row[5]
+      programName: row[1],
+      location: row[4],
+      room: row[5],
+      scheduleType: row[6],
+      days: days,
+      date: row[8],
+      startTime: row[9],
+      endTime: row[10],
+      startDate: row[11],
+      endDate: row[12]
     };
 
     if (hasConflict(newBooking, existing)) {
@@ -316,28 +354,39 @@ function hasConflict(booking1, booking2) {
  * Check if day of week overlaps
  */
 function hasDayOverlap(booking1, booking2) {
+  // Helper to convert day name to 3-letter abbreviation
+  const dayMap = {
+    'sunday': 'sun', 'monday': 'mon', 'tuesday': 'tue', 'wednesday': 'wed',
+    'thursday': 'thu', 'friday': 'fri', 'saturday': 'sat'
+  };
+
   // If either is a specific date (not recurring), check if they're on same day
-  if (booking1.specificDate && booking2.specificDate) {
-    const date1 = new Date(booking1.specificDate);
-    const date2 = new Date(booking2.specificDate);
+  if ((booking1.scheduleType === 'specific' || booking1.scheduleType === 'onetime') &&
+      (booking2.scheduleType === 'specific' || booking2.scheduleType === 'onetime')) {
+    const date1 = new Date(booking1.date || booking1.specificDate);
+    const date2 = new Date(booking2.date || booking2.specificDate);
     return date1.getTime() === date2.getTime();
   }
 
-  // If one is specific date, check if it falls on the other's day of week
-  if (booking1.specificDate) {
-    const date = new Date(booking1.specificDate);
-    const dayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][date.getDay()];
-    return booking2.dayOfWeek === dayOfWeek;
+  // If one is specific date, check if it falls on any of the other's days
+  if (booking1.scheduleType === 'specific' || booking1.scheduleType === 'onetime') {
+    const date = new Date(booking1.date || booking1.specificDate);
+    const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][date.getDay()];
+    const days2 = booking2.days || [];
+    return days2.includes(dayOfWeek);
   }
 
-  if (booking2.specificDate) {
-    const date = new Date(booking2.specificDate);
-    const dayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][date.getDay()];
-    return booking1.dayOfWeek === dayOfWeek;
+  if (booking2.scheduleType === 'specific' || booking2.scheduleType === 'onetime') {
+    const date = new Date(booking2.date || booking2.specificDate);
+    const dayOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][date.getDay()];
+    const days1 = booking1.days || [];
+    return days1.includes(dayOfWeek);
   }
 
-  // Both recurring - check if same day of week
-  return booking1.dayOfWeek === booking2.dayOfWeek;
+  // Both recurring - check if any days overlap
+  const days1 = booking1.days || [];
+  const days2 = booking2.days || [];
+  return days1.some(day => days2.includes(day));
 }
 
 /**
