@@ -6,8 +6,8 @@
   # Publish the gak-calendar directory
   publish = "gak-calendar"
 
-  # Base directory
-  base = "gak-calendar"
+  # No base directory needed - publish path is from repo root
+  # base = "gak-calendar"
 
 # Redirect rules
 [[redirects]]
