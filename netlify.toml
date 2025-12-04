@@ -1,0 +1,24 @@
+# Netlify Configuration
+[build]
+  # No build command needed - it's just static HTML/JS
+  command = ""
+
+  # Publish the gak-calendar directory
+  publish = "gak-calendar"
+
+  # Base directory
+  base = "gak-calendar"
+
+# Redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
