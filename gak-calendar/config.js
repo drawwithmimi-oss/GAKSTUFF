@@ -8,7 +8,7 @@
 window.CONFIG = {
   // Google Apps Script Web App URL
   // Get this from: Apps Script > Deploy > Manage deployments > Web App URL
-  API_URL: 'https://script.google.com/macros/s/AKfycbxkdc64GprVdWo6ZwjLWS0NVB1FN1cFluRHSMCec6Vcaj5g0BQrgL1ZC83VqYIbldhstA/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbz6h1hYvWod4RVgz-y3jVb7C-S8bqWJdSALawreHLjgqp9lX2duF1mijschUHFOmRjR1g/exec',
 
   // ✅ CONNECTED TO YOUR GOOGLE SHEETS!
 
