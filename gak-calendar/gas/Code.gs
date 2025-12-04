@@ -108,28 +108,18 @@ function getUserEmail() {
 
 /**
  * Get user information and permissions
+ * No authentication - everyone has full access
  */
 function getUserInfo() {
-  const email = getUserEmail();
-  const sheet = getSheet(CONFIG.SHEETS.USERS);
-  const data = sheet.getDataRange().getValues();
-
-  // Find user
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] === email) {
-      return jsonResponse({
-        email: data[i][0],
-        name: data[i][1],
-        role: data[i][2],
-        canCreate: data[i][3],
-        canEditAll: data[i][4],
-        canDelete: data[i][5],
-        active: data[i][6]
-      });
-    }
-  }
-
-  return jsonResponse({ error: 'User not found' }, 404);
+  return jsonResponse({
+    email: 'team@gabrielsartkids.com',
+    name: 'GAK Team',
+    role: 'admin',
+    canCreate: true,
+    canEditAll: true,
+    canDelete: true,
+    active: true
+  });
 }
 
 /**
